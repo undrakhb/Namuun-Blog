@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post - The Blog</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#050A24] text-white font-sans">
+  <div class="max-w-[800px] mx-auto px-6">
+    <nav class="flex items-center justify-between py-6">
+      <a href="index.html" class="font-semibold">Your Name</a>
+      <div class="flex gap-6 text-sm">
+        <a href="index.html" class="underline underline-offset-4">Blog</a>
+        <a href="#" class="text-gray-300 hover:text-white">Projects</a>
+        <a href="#" class="text-gray-300 hover:text-white">About</a>
+        <a href="#" class="text-gray-300 hover:text-white">Newsletter</a>
+      </div>
+    </nav>
+
+    <a href="index.html" class="text-sm text-gray-400 hover:text-white">&larr; Back</a>
+    <article id="post" class="py-8"><p class="text-gray-400">Loading...</p></article>
+  </div>
+
+  <script>
+    // Forem (dev.to) API: GET /api/articles/{id} -> neg huudas (body_html-tei)
+    const API_URL = "https://dev.to/api/articles";
+    const id = new URLSearchParams(location.search).get("id");
+
+    fetch(`${API_URL}/${id}`)
+      .then((res) => res.json())
+      .then((p) => {
+        document.title = p.title;
+        document.getElementById("post").innerHTML = `
+          <p class="text-sm text-violet-400">${p.readable_publish_date} · ${p.user.name}</p>
+          <h1 class="mt-2 text-4xl font-bold">${p.title}</h1>
+          <div class="mt-3 flex flex-wrap gap-2">
+            ${(p.tags || []).map((t) => `<span class="rounded-full border border-indigo-300 px-2 py-0.5 text-xs text-indigo-300">${t}</span>`).join("")}
+          </div>
+          <img src="${p.cover_image || p.social_image || 'https://placehold.co/800x400/050A24/ffffff?text=No+image'}" alt="" class="mt-6 w-full rounded object-cover" />
+          <div class="mt-6 space-y-4 leading-relaxed text-gray-300 [&_a]:text-violet-400 [&_img]:rounded [&_pre]:overflow-x-auto [&_pre]:bg-black/40 [&_pre]:p-3 [&_h2]:text-2xl [&_h2]:font-semibold [&_h3]:text-xl [&_h3]:font-semibold">${p.body_html}</div>`;
+      })
+      .catch(() => {
+        document.getElementById("post").innerHTML = '<p class="text-gray-400">Failed to load post.</p>';
+      });
+  </script>
+</body>
+</html>

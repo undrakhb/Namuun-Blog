@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Blog</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#050A24] text-white font-sans">
+  <div class="max-w-[1100px] mx-auto px-6">
+    <!-- Nav -->
+    <nav class="flex items-center justify-between py-6">
+      <a href="index.html" class="font-semibold">Your Name</a>
+      <div class="flex gap-6 text-sm">
+        <a href="index.html" class="underline underline-offset-4">Blog</a>
+        <a href="#" class="text-gray-300 hover:text-white">Projects</a>
+        <a href="#" class="text-gray-300 hover:text-white">About</a>
+        <a href="#" class="text-gray-300 hover:text-white">Newsletter</a>
+      </div>
+    </nav>
+
+    <!-- Title -->
+    <h1 class="border-y border-gray-600 py-6 text-center text-6xl md:text-[160px] leading-none font-extrabold tracking-tight">THE BLOG</h1>
+
+    <!-- Posts -->
+    <h2 class="mt-12 mb-6 text-xl font-semibold">Recent blog posts</h2>
+    <div id="posts" class="grid gap-8 md:grid-cols-2 pb-16"></div>
+    <p id="status" class="pb-16 text-gray-400">Loading...</p>
+  </div>
+
+  <script>
+    // Forem (dev.to) API: GET /api/articles -> huudas bolgonii jagsaalt
+    const API_URL = "https://dev.to/api/articles?per_page=9";
+
+    const tagColors = ["text-blue-400 border-blue-400", "text-indigo-300 border-indigo-300", "text-pink-400 border-pink-400"];
+
+    fetch(API_URL)
+      .then((res) => res.json())
+      .then((posts) => {
+        document.getElementById("status").remove();
+        document.getElementById("posts").innerHTML = posts.map((p, i) => `
+          <a href="post.html?id=${p.id}" class="block ${i === 0 ? "md:col-span-2" : ""}">
+            <img src="${p.cover_image || p.social_image || 'https://placehold.co/800x400/050A24/ffffff?text=No+image'}" alt="" class="w-full ${i === 0 ? "h-80" : "h-56"} object-cover rounded" />
+            <p class="mt-4 text-sm text-violet-400">${p.readable_publish_date}</p>
+            <h3 class="mt-1 text-xl font-semibold">${p.title}</h3>
+            <p class="mt-2 text-sm text-gray-400">${p.description}</p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              ${(p.tag_list || []).map((t, j) => `<span class="rounded-full border px-2 py-0.5 text-xs ${tagColors[j % 3]}">${t}</span>`).join("")}
+            </div>
+          </a>`).join("");
+      })
+      .catch(() => {
+        document.getElementById("status").textContent = "Failed to load posts.";
+      });
+  </script>
+</body>
+</html>
